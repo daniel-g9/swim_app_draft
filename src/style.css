@@ -1,0 +1,459 @@
+/* ---------------------------------------------------------------
+   Swim app — global tokens, reset and shared control styles.
+   Screens live in src/screens/*.vue and use these classes.
+   --------------------------------------------------------------- */
+
+:root {
+  /* Brand gradient — the blue every screen sits on. */
+  --brand-1: #3ba7f2;
+  --brand-2: #40b5ec;
+  --brand-3: #4bcae2;
+  --screen-bg: linear-gradient(178deg, var(--brand-1) 0%, var(--brand-2) 52%, var(--brand-3) 100%);
+  /* Colour the tab bar fades up into — the bottom of the screen background. */
+  --tabbar-fade: 75, 202, 226;
+  /* Focus ring inside white panels, where --on-brand would vanish. */
+  --accent: var(--brand-1);
+
+  /* Controls: white panels with a hard black outline, like the wireframe. */
+  --panel: #ffffff;
+  --panel-mute: #dcdcdc;
+  --panel-card: #d6d6d6;
+  --line: #111318;
+  --ink: #0d1117;
+  --ink-soft: #4a5059;
+  --on-brand: #ffffff;
+
+  --radius-sm: 6px;
+  --radius-md: 10px;
+  --radius-lg: 16px;
+  --radius-pill: 999px;
+
+  --nav-h: 62px;
+  --content-max: 460px;
+
+  --sans: system-ui, 'Segoe UI', Calibri, Roboto, sans-serif;
+
+  font: 16px/1.45 var(--sans);
+  /* The brand is a fixed light blue in both OS themes, so pin the scheme
+     and keep UA form controls light. */
+  color-scheme: light;
+  color: var(--on-brand);
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html,
+body,
+#app {
+  min-height: 100%;
+}
+
+body {
+  margin: 0;
+  background: var(--brand-2);
+}
+
+/* ------------------------- background themes ---------------------------
+   Set by BackgroundToggle as <html data-bg="…">. Blue (no attribute) is
+   the default above; each theme only swaps the tokens it needs. */
+
+:root[data-bg='black'] {
+  --brand-1: #000000;
+  --brand-2: #000000;
+  --brand-3: #000000;
+  --tabbar-fade: 0, 0, 0;
+  --accent: #111318;
+}
+
+:root[data-bg='white'] {
+  --brand-1: #ffffff;
+  --brand-2: #ffffff;
+  --brand-3: #ffffff;
+  --tabbar-fade: 255, 255, 255;
+  --accent: #111318;
+  /* Text and icons that sit on the background go dark. */
+  --on-brand: #0d1117;
+}
+
+:root[data-bg='green'] {
+  --brand-1: #1f9d6b;
+  --brand-2: #2bb673;
+  --brand-3: #6fd08c;
+  --tabbar-fade: 111, 208, 140;
+}
+
+:root[data-bg='purple'] {
+  --brand-1: #5b3fd1;
+  --brand-2: #7c4ddb;
+  --brand-3: #b05fdc;
+  --tabbar-fade: 176, 95, 220;
+}
+
+:root[data-bg='sunset'] {
+  --brand-1: #f0643c;
+  --brand-2: #f28a3f;
+  --brand-3: #f5b94a;
+  --tabbar-fade: 245, 185, 74;
+}
+
+img,
+svg {
+  display: block;
+  max-width: 100%;
+}
+
+h1,
+h2,
+h3 {
+  margin: 0;
+  font-weight: 700;
+  letter-spacing: -0.3px;
+}
+
+p {
+  margin: 0;
+}
+
+button,
+input,
+select,
+textarea {
+  font: inherit;
+  color: inherit;
+}
+
+/* ------------------------------ app shell ------------------------------ */
+
+#app {
+  min-height: 100svh;
+  display: flex;
+  flex-direction: column;
+  background: var(--screen-bg);
+  background-attachment: fixed;
+}
+
+/* Each screen is a full-height column with room left for the tab bar. */
+.screen {
+  flex: 1;
+  width: 100%;
+  max-width: var(--content-max);
+  margin: 0 auto;
+  padding: 28px 22px calc(var(--nav-h) + env(safe-area-inset-bottom, 0px) + 28px);
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.screen--flush {
+  padding-left: 0;
+  padding-right: 0;
+}
+
+.screen-title {
+  font-size: 34px;
+  line-height: 1.1;
+  color: var(--on-brand);
+}
+
+.screen-title--center {
+  text-align: center;
+}
+
+/* Screens cross-fade on navigation. The home splash leans on this to hand
+   over to the upload screen once its hold is up. */
+.screen-fade-enter-active {
+  transition: opacity 0.5s ease;
+}
+
+.screen-fade-leave-active {
+  transition: opacity 0.65s ease;
+}
+
+.screen-fade-enter-from,
+.screen-fade-leave-to {
+  opacity: 0;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .screen-fade-enter-active,
+  .screen-fade-leave-active {
+    transition: none;
+  }
+}
+
+/* ------------------------------- controls ------------------------------ */
+
+/* White panel with the hard outline used by every control in the wireframe. */
+.panel {
+  background: var(--panel);
+  border: 2px solid var(--line);
+  border-radius: var(--radius-md);
+  color: var(--ink);
+}
+
+.field {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  width: 100%;
+  min-height: 46px;
+  padding: 0 12px;
+}
+
+/* Native <select> stripped back so the row's own chevron shows through. */
+.field select {
+  appearance: none;
+  flex: 1;
+  min-width: 0;
+  border: 0;
+  background: transparent;
+  font-weight: 700;
+  font-size: 17px;
+  padding: 10px 0;
+  cursor: pointer;
+}
+
+/* The keyboard ring hugs the panel's own edge — no second box floating
+   around the select itself. */
+.field select:focus-visible {
+  outline: none;
+}
+
+.field:has(select:focus-visible) {
+  outline: 3px solid var(--on-brand);
+  outline-offset: 2px;
+}
+
+.field .icon {
+  flex: none;
+  color: var(--ink);
+}
+
+.text-input {
+  flex: 1;
+  min-width: 0;
+  border: 0;
+  background: transparent;
+  padding: 12px 2px;
+  font-size: 15px;
+}
+
+.text-input::placeholder {
+  color: var(--ink-soft);
+  opacity: 0.8;
+}
+
+.text-input:focus {
+  outline: none;
+}
+
+.btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  min-height: 42px;
+  padding: 0 22px;
+  border: 2px solid var(--line);
+  border-radius: var(--radius-md);
+  background: var(--panel-mute);
+  color: var(--ink);
+  font-weight: 600;
+  font-size: 16px;
+  cursor: pointer;
+  transition: transform 0.12s ease, filter 0.12s ease;
+}
+
+.btn:hover {
+  filter: brightness(1.06);
+}
+
+.btn:active {
+  transform: translateY(1px);
+}
+
+.btn:focus-visible {
+  outline: 3px solid var(--on-brand);
+  outline-offset: 2px;
+}
+
+.btn--white {
+  background: var(--panel);
+}
+
+.btn--icon {
+  min-height: 0;
+  padding: 6px;
+  border: 0;
+  background: transparent;
+}
+
+/* Square checkbox, white fill, black outline — drawn, not native. */
+.checkbox {
+  appearance: none;
+  flex: none;
+  width: 20px;
+  height: 20px;
+  margin: 0;
+  border: 2px solid var(--line);
+  border-radius: 3px;
+  background: var(--panel);
+  cursor: pointer;
+  display: grid;
+  place-content: center;
+}
+
+.checkbox::after {
+  content: '';
+  width: 10px;
+  height: 6px;
+  border-left: 2.5px solid var(--ink);
+  border-bottom: 2.5px solid var(--ink);
+  transform: rotate(-45deg) scale(0);
+  transition: transform 0.12s ease;
+}
+
+.checkbox:checked::after {
+  transform: rotate(-45deg) scale(1);
+}
+
+.checkbox:focus-visible {
+  outline: 3px solid var(--on-brand);
+  outline-offset: 2px;
+}
+
+.check-row {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  font-weight: 700;
+  font-size: 17px;
+  color: var(--on-brand);
+  cursor: pointer;
+}
+
+.check-row .checkbox {
+  margin-left: auto;
+}
+
+/* Read-only status row: the app fills these in, nothing to click. */
+.check-row--static,
+.check-row--static .checkbox {
+  cursor: default;
+}
+
+.checkbox:disabled {
+  opacity: 1;
+}
+
+/* ------------------------------ tab bar -------------------------------- */
+
+.tabbar {
+  position: fixed;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  z-index: 10;
+  height: calc(var(--nav-h) + env(safe-area-inset-bottom, 0px));
+  padding-bottom: env(safe-area-inset-bottom, 0px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  background: linear-gradient(180deg, rgba(var(--tabbar-fade), 0) 0%, var(--brand-3) 34%);
+}
+
+.tabbar__link {
+  flex: 0 1 84px;
+  height: 46px;
+  display: grid;
+  place-content: center;
+  border-radius: var(--radius-md);
+  color: var(--on-brand);
+  text-decoration: none;
+  transition: background 0.15s ease;
+}
+
+.tabbar__link:hover {
+  background: rgba(255, 255, 255, 0.16);
+}
+
+.tabbar__link:focus-visible {
+  outline: 3px solid var(--on-brand);
+  outline-offset: -3px;
+}
+
+/* vue-router adds this to the link matching the current route. */
+.tabbar__link.router-link-active {
+  background: rgba(255, 255, 255, 0.26);
+}
+
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0 0 0 0);
+  white-space: nowrap;
+  border: 0;
+}
+
+/* --------------------------- background toggle ------------------------ */
+
+/* Round swatch pinned top-right; it previews the background it's on. */
+.bg-toggle {
+  position: fixed;
+  top: calc(env(safe-area-inset-top, 0px) + 14px);
+  right: 16px;
+  z-index: 11;
+  width: 40px;
+  height: 40px;
+  padding: 0;
+  display: grid;
+  place-content: center;
+  border: 2px solid var(--line);
+  border-radius: var(--radius-pill);
+  background: var(--panel);
+  color: var(--ink);
+  cursor: pointer;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.18);
+  transition: transform 0.12s ease;
+}
+
+.bg-toggle:active {
+  transform: scale(0.94);
+}
+
+.bg-toggle:focus-visible {
+  outline: 3px solid var(--on-brand);
+  outline-offset: 2px;
+}
+
+.bg-toggle__swatch {
+  width: 24px;
+  height: 24px;
+  border-radius: var(--radius-pill);
+  border: 1.5px solid var(--line);
+  background: var(--screen-bg);
+}
+
+/* Wide viewports: the layout stays a single mobile-width column, centred. */
+@media (min-width: 560px) {
+  .tabbar {
+    max-width: var(--content-max);
+    left: 50%;
+    transform: translateX(-50%);
+    background: linear-gradient(180deg, rgba(var(--tabbar-fade), 0) 0%, rgba(var(--tabbar-fade), 0.92) 34%);
+  }
+
+  /* Keep the toggle in the corner of the centred column, not the window. */
+  .bg-toggle {
+    right: calc(50% - var(--content-max) / 2 + 16px);
+  }
+}
