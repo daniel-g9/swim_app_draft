@@ -1,47 +1,8 @@
 <script setup>
 import AnalysisThumb from '../components/AnalysisThumb.vue'
 
-// Stand-in for the saved analyses the app will load per user. The template
-// renders one .analysis-card per entry, so this list is the only thing to
-// swap once storage is real. `technique` holds whatever was picked on the
-// upload screen — a stroke, a turn or the dive.
-const analyses = [
-  {
-    id: 1,
-    title: 'Previous analysis 1',
-    date: '12 Sep',
-    technique: 'Freestyle',
-    improvements: ['Improvement 1', 'Improvement 2', 'Improvement 3'],
-  },
-  {
-    id: 2,
-    title: 'Previous analysis 2',
-    date: '8 Sep',
-    technique: 'Flip turn',
-    improvements: ['Improvement 1', 'Improvement 2', 'Improvement 3'],
-  },
-  {
-    id: 3,
-    title: 'Previous analysis 3',
-    date: '2 Sep',
-    technique: 'Breaststroke',
-    improvements: ['Improvement 1', 'Improvement 2'],
-  },
-  {
-    id: 4,
-    title: 'Previous analysis 4',
-    date: '26 Aug',
-    technique: 'Dive',
-    improvements: ['Improvement 1', 'Improvement 2', 'Improvement 3'],
-  },
-  {
-    id: 5,
-    title: 'Previous analysis 5',
-    date: '19 Aug',
-    technique: 'Open turn',
-    improvements: ['Improvement 1', 'Improvement 2', 'Improvement 3'],
-  },
-]
+// Filled by the Save button on the analysis screen; empty until then.
+import { analyses } from '../stores/analyses'
 </script>
 
 <template>
@@ -57,11 +18,15 @@ const analyses = [
         </svg>
       </span>
       <h1 class="profile__name">Profile name</h1>
-      <p class="profile__meta">{{ analyses.length }} saved analyses</p>
+      <p class="profile__meta">
+        {{ analyses.length }} saved {{ analyses.length === 1 ? 'analysis' : 'analyses' }}
+      </p>
     </header>
 
     <div class="profile__body">
       <h2 class="profile__section">Previous analyses</h2>
+
+      <p v-if="!analyses.length" class="profile__empty">Saved video analyses will show up here</p>
 
       <!-- One saved analysis per card: still frame on the left, its
            improvement checklist on the right. -->
@@ -147,6 +112,15 @@ const analyses = [
   text-transform: uppercase;
   color: var(--on-brand);
   opacity: 0.9;
+}
+
+.profile__empty {
+  padding: 28px 18px;
+  border: 2px dashed rgba(255, 255, 255, 0.6);
+  border-radius: var(--radius-lg);
+  color: var(--on-brand);
+  font-size: 15px;
+  text-align: center;
 }
 
 .analysis-card {

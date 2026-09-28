@@ -1,5 +1,22 @@
 <script setup>
+import { ref } from 'vue'
+import { useRoute } from 'vue-router'
 import VideoPlaceholder from '../components/VideoPlaceholder.vue'
+import { saveAnalysis } from '../stores/analyses'
+
+const route = useRoute()
+
+const name = ref('')
+const saved = ref(false)
+
+// One save per analysis; the button locks once it's gone to the profile.
+function save() {
+  const title = name.value.trim()
+  if (!title || saved.value) return
+
+  saveAnalysis({ title, technique: route.query.technique || 'Freestyle' })
+  saved.value = true
+}
 </script>
 
 <template>
@@ -36,9 +53,13 @@ import VideoPlaceholder from '../components/VideoPlaceholder.vue'
     <div class="save-row">
       <div class="panel field save-row__name">
         <label class="sr-only" for="analysis-name">Name this analysis</label>
-        <input id="analysis-name" class="text-input" type="text" placeholder="Type name" />
+        <input id="analysis-name" v-model="name" class="text-input" type="text"
+               placeholder="Type name" :disabled="saved" @keydown.enter="save" />
       </div>
-      <button class="btn btn--white" type="button">Save</button>
+      <button class="btn btn--white" type="button" :disabled="!name.trim() || saved"
+              @click="save">
+        {{ saved ? 'Saved' : 'Save' }}
+      </button>
     </div>
   </main>
 </template>

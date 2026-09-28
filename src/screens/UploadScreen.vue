@@ -44,7 +44,7 @@ function analyze() {
 
     if (progress.value >= 100) {
       stopTimer()
-      router.push({ name: 'analysis' })
+      router.push({ name: 'analysis', query: { technique: technique.value } })
     }
   }, 60)
 }
